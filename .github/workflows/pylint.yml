@@ -3,8 +3,8 @@ name: Prova_Pylint
 on:
   push:
     branches: [main, develop]
-      paths:
-        - 'src/**/*.py'
+    paths:
+      - 'src/**/*.py'
   pull_request:
     branches: [main, develop]
     paths:
