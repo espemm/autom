@@ -45,7 +45,7 @@ jobs:
         if [[ -z "${BASE:-}" || "${BASE:-}" == "0000000000000000000000000000000000000000" ]]; then
             git ls-files 'src/**/*.py' > files.txt || true
         else
-            git diff --name-only "$BASE" "$HEAD" | grep 'src/**/*.py' > files.txt || true
+            git diff --name-only --diff-filter=AM "$BASE" "$HEAD" | grep -E '^src/.*\.py$' > files.txt || true
         fi
 
         sort -u files.txt -o files.txt || true
