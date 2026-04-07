@@ -28,18 +28,49 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-    - name: Comprovar sintaxi codi modificat amb compileall
+    - name: Detectar arxius Python modificats
+      id: changed_files
       shell: bash
       run: |
         set -euo pipefail
-        git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- 'src/**/*.py' > files.txt || true
 
-        if [[ ! -s files.txt ]]; then
-            echo "No hi ha arxius .py modificats en src."
-            exit 0
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+        else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
         fi
+
+        if [[ -z "${BASE:-}" || "${BASE:-}" == "0000000000000000000000000000000000000000" ]]; then
+            git ls-files 'src/**/*.py' > files.txt || true
+        else
+            git diff --name-only "$BASE" "$HEAD" -- 'src/**/*.py' > files.txt || true
+        fi
+
+        sort -u files.txt -o files.txt || true
+        echo "Arxius detectats:"
+        cat files.txt || true
+
+        if [[ -s files.txt ]]; then
+          echo "has_files=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_files=false" >> "$GITHUB_OUTPUT"
+        fi
+    - name: Comprovar sintaxi codi modificat amb compileall
+      if: steps.changed_files.outputs.has_files == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
         mapfile -t files < files.txt
         python -m compileall "${files[@]}"
     - name: Analitzar codi modificat amb pylint
+      if: steps.changed_files.outputs.has_files == 'true'
+      shell: bash
       run: |
+        set -euo pipefail
+        mapfile -t files < files.txt
         pylint --output-format=github "${files[@]}"
+    - name: No hi ha arxius per analitzar
+      if: steps.changed_files.outputs.has_files != 'true'
+      run: echo "No hi ha arxius .py modificats en src."
