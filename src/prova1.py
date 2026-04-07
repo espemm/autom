@@ -1,3 +1,6 @@
+"""
+Exemple: prova1
+"""
 print("Provant Python")
 a=input("Text a: ")
 b=int(input("Nombre b: "))
