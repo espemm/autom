@@ -9,7 +9,7 @@ def sumar2(a,b):
 try:
     x=int(input("Valor 1: "))
     y=int(input("Valor 2: "))
-except:
+except ValueError:
     print("Problema")
 
 print(x,"+",y,"=",sumar2(x,y))
