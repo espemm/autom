@@ -11,6 +11,5 @@ try:
     y=int(input("Valor 2: "))
 except:
     print("Problema")
-    return
 
 print(x,"+",y,"=",sumar2(x,y))
