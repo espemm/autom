@@ -3,5 +3,5 @@ a=input("Text a: ")
 b=int(input("Nombre b: "))
 if b>5:
     print("SI - més de 5")
-else:
+else
     print("NO")
