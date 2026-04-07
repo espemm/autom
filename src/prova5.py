@@ -11,5 +11,5 @@ def primer(n):
             break
     if (i + 1)  == n:
         print(str(n) + "primer")
-    else: 
+    else:
         print(str(n) + " NO primer")
